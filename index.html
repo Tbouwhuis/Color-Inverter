@@ -1,118 +1,107 @@
-<html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-	</head>
-	<body>
-	
-		<div id="gameScreen">
-			
-			<div class="row">
-				
-				<div class="col-1">
-					
-					<div id="locationMenu" class="row">
-						<div id="gardenButton" class="locationButton" onclick="selectLocation('garden');">Garden</div><div id="marketButton" class="locationButton" onclick="selectLocation('market');">Market</div>
-					</div>
-				
-				</div>
-				
-				<div class="col-7">
-					
-					<div id="gardenSpace" class="locationSpace row">
-						<div id="plotOne" class="gardenPlot" onclick="selectPlot('plotOne');">
-							<div id="plotOneProgress" class="progressBar grow"></div><div id="plotOneWater" class="progressBar water"></div><div id="plotOneHarvest" class="progressBar harvest hidden"></div>
-						</div>
-						<div id="plotTwo" class="gardenPlot" onclick="selectPlot('plotTwo');">
-							<div id="plotTwoLocked" class="locked">Cost: 50</div>
-							<div id="plotTwoProgress" class="progressBar grow"></div><div id="plotTwoWater" class="progressBar water"></div><div id="plotTwoHarvest" class="progressBar harvest hidden"></div>
-						</div>
-						<div id="plotThree" class="gardenPlot" onclick="selectPlot('plotThree');">
-							<div id="plotThreeLocked" class="locked">Cost: 2000</div>
-							<div id="plotThreeProgress" class="progressBar grow"></div><div id="plotThreeWater" class="progressBar water"></div><div id="plotTwoHarvest" class="progressBar harvest hidden"></div>
-						</div>
-						<div id="plotFour" class="gardenPlot" onclick="selectPlot('plotFour');">
-							<div id="plotFourLocked" class="locked">Cost: 425000</div>
-							<div id="plotFourProgress" class="progressBar grow"></div><div id="plotFourWater" class="progressBar water"></div><div id="plotTwoHarvest" class="progressBar harvest hidden"></div>
-						</div>
-						
-					</div>
-					
-					<div id="marketSpace" class="locationSpace row hidden">
-					
-						<div id="seedSales" class="marketSection">
-							<div id="seedSalesTitle" class="title">Purchase Seeds</div>
-							<div id="seedsForSale" class="itemSpace marketSpace"></div>
-						</div>
-						
-						<div id="inventorySales" class="marketSection">
-							<div id="inventorySalesTitle" class="title">Sell Stock</div>
-							<div id="inventoryToSell" class="itemSpace marketSpace"></div>
-						</div>
-						
-					</div>
-					
-					<div id="librarySpace" class="locationSpace row hidden">
-						<div class="title">Library</div>
-						<div id="libraryItems" class="itemSpace librarySpace"></div>
-					</div>
-					
-				</div>
-				
-				<div class="col-1">
-					
-					<div id="actionItems" class="row">
-						<div id="waterAction" class="actionButton" onclick="selectAction('water');">Water</div><div id="harvestAction" class="actionButton" onclick="selectAction('harvest');">Harvest</div>
-					</div>
-					
-				</div>
-				
-				<div class="col-3">
-					
-					<div class="row">
-					
-						<div id="seedsMenu">
-							<div id="seedsTitle" class="title">Seeds</div>
-							<div id="seeds" class="itemSpace"></div>
-						</div>
-						
-					</div>
-					
-					<div class="row">
-					
-						<div id="inventoryMenu">
-							<div id="inventoryTitle" class="title">Inventory</div>
-							<div id="inventory" class="itemSpace"></div>
-						</div>
-						
-					</div>
-					
-					<div class="row">
-						<div id="gold" class="title" onclick="showstuff();"></div>
-					</div>
-					
-					<div class="row">
-						<div id="acheivementMenu" class="title col-6" onclick="toggleModal('acheivementsModal');">Acheivements</div>
-						<div id="settingsMenu" class="title" onclick="resetGameData();">Settings</div>
-					</div>
-					
-				</div>
-				
-			</div>
-			
-			<div id="acheivementsModal" onclick="toggleModal('acheivementsModal');">
-				<div id="acheivementContent">
-					<div class="title">Acheivements</div>
-					<div id="acheivementSection" class="row">
-						<div id="highlightedAcheivement"><img id="highlightedIcon"></img><div id="highlightedInfo"></div></div><div id="acheivementSpace" class="acheivementSpace"></div>
-					</div>
-				</div>
-			</div>
-	
-		</div>
-	
-	
-	
-	
-	<script type="text/javascript" src="js/main.js"></script>
-	</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Invert</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    video {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 40px;
+      left: 0; right: 0;
+      text-align: center;
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      transition: opacity 1s;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+  <div id="hint">tap to pause</div>
+
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const hint = document.getElementById('hint');
+
+  let paused = false;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  async function start() {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    video.srcObject = stream;
+    await video.play();
+    render();
+    setTimeout(() => { hint.style.opacity = '0'; }, 3000);
+  }
+
+  function render() {
+    requestAnimationFrame(render);
+    if (paused) return;
+
+    const vw = canvas.width, vh = canvas.height;
+    const vr = video.videoWidth / video.videoHeight;
+    const cr = vw / vh;
+    let sx, sy, sw, sh;
+    if (vr > cr) {
+      sh = video.videoHeight; sw = sh * cr;
+      sx = (video.videoWidth - sw) / 2; sy = 0;
+    } else {
+      sw = video.videoWidth; sh = sw / cr;
+      sx = 0; sy = (video.videoHeight - sh) / 2;
+    }
+
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, vw, vh);
+    const img = ctx.getImageData(0, 0, vw, vh);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      d[i]   = 255 - d[i];
+      d[i+1] = 255 - d[i+1];
+      d[i+2] = 255 - d[i+2];
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  document.addEventListener('click', () => { paused = !paused; });
+
+  start().catch(() => { document.body.style.background = '#111'; });
+</script>
+</body>
 </html>
